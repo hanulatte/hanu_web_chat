@@ -16,7 +16,7 @@ var server = http.createServer(function(request, response){
 });
 
 var io = socketio.listen(server);
-
+var roomList = [];
 io.sockets.on('connection', function(socket){
   //메세지 이벤트
   socket.on('message', function(data){
