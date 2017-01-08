@@ -7,7 +7,7 @@ var socketio = require('socket.io');
 //웹서버를 만듭니다.
 var server = http.createServer(function(request, response){
   //HTML 파일을 읽는다
-  fs.readFile('HTMLPage0.html', function(error, data){
+  fs.readFile('HTMLPage_m.html', function(error, data){
     response.writeHead(200, {'Content-type': 'text/html'});
     response.end(data);
   });
