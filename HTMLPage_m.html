@@ -4,32 +4,6 @@
   <title>Mobile Chat</title>
   <meta name = "viewport" content="width=device-width, initial-scale=1"/>
   <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
-</head>
-<body>
-  <div data-role="page">
-    <div data-role="header">
-      <h1>Socket.do Chat</h1>
-    </div>
-    <div data-role="content">
-      <h3>Nick name</h3>
-      <input id="name" />
-      <a data-role="button" href="#chatpage">Start Chat</a>
-    </div>
-  </div>
-  <div data-role="page" id="chatpage">
-    <div data-role="header">
-      <h1>Socket.io</h1>
-    </div>
-    <div data-role="content">
-      <input id ="message" />
-
-      <button>Button</button>
-      <ul id="content" data-role="listview" data-inset="true">
-
-      </ul>
-    </div>
-  </div>
-
   <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
   <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
@@ -60,13 +34,47 @@
           $("#message").val("");
           socket.emit('message', {
             name : $('#name').val(),
+            room_name : $('#room_name').val(),
             message : message,
             date: new Date().toUTCString()
           });
         }
       });
-      
+
+      $("#a_start_chat").click(function(){
+        alert('start clicked...');
+        window.location.href = href;
+      });
+
     });
   </script>
+</head>
+<body>
+  <div data-role="page">
+    <div data-role="header">
+      <h1>Socket.do Chat</h1>
+    </div>
+    <div data-role="content">
+      <h3>Nick name</h3>
+      <input id="name" />
+      <h3>Room name</h3>
+      <input id="room_name" />
+      <!--<a data-role="button" href="#chatpage">Start Chat</a>-->
+      <a data-role="button" id="a_start_chat">Start Chat</a>
+    </div>
+  </div>
+  <div data-role="page" id="chatpage">
+    <div data-role="header">
+      <h1>Socket.io</h1>
+    </div>
+    <div data-role="content">
+      <input id ="message" />
+
+      <button>Button</button>
+      <ul id="content" data-role="listview" data-inset="true">
+
+      </ul>
+    </div>
+  </div>
 </body>
 </html>
