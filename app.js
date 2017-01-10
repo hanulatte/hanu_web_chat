@@ -8,7 +8,7 @@ var server = http.createServer(function(request, response) {
   var path = url.parse(request.url).pathname.substr(1);
   //var type = path.substr(path.lastIndexOf(".") + 1);
   var index = "HTMLPage_m.html";
-  var file = (path == "") ? index : path;
+  var file = (path === "") ? index : path;
     //파일을 읽는다
     fs.readFile(file, function(error, data) {
         response.writeHead(200, {
