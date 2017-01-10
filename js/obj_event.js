@@ -3,9 +3,7 @@ $(document).ready(function() {
     $(document).on("click", "#join", function() {
         var room_name = $("#room_name").val().trim();
         if (room_name != "" && room_name != "Now Loading...") {
-            socket.emit("join", {
-                room_name: room_name
-            });
+            socket.emit("join", room_name);
             location.href = "#chatpage";
         }
     });
