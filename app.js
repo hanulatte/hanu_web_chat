@@ -56,8 +56,9 @@ var server = http.createServer(function(request, response) {
     log("connection");
 }).on("request", function(data) {
     log("request");
-}).on("clientError", function(data) {
-    log("clientError", data);
+}).on("clientError", function(err, data) {
+    log("clientError", err);
+    //log(console.dir(data));
 }).on("close", function(data) {
     log("close");
 }).listen(52273, function() {
@@ -76,18 +77,35 @@ io.sockets.on('connection', function(socket) {
         if (!roomList.includes(room_name)) {
             roomList.push(room_name);
         }
-        log("new join / room condition :", roomList.join(", "));
+        log("join" + room_name + "/ room condition :", roomList.join(", "));
     });
-    socket.on('message', function(data) {
-        //클라이언트 message 이벤트를 발생시킨다.
-        io.sockets.emit('message', data);
+    socket.on('toRoom', function(data) {
+        io.sockets.in(data.room).emit('message', data);
+        log("toRoom :", toString(data));
+    });
+    socket.on("toAll", function(data){
+      io.sockets.emit("message", data);
+      log("toAll :", toString(data));
+    });
+    socket.on("unload", function(room_name) {
+        socket.leave(room_name);
+        var i = roomList.indexOf(room_name);
+        (i != "-1") ? roomList.splice(i, 1): true;
+        log("leave", room_name, "/ room condition :", roomList.join(", "));
     });
 });
 
 function log() {
-    var str = "";
-    for (var p in arguments) {
-        str += arguments[p].toString() + " ";
-    }
+    var str = toString(arguments);
     console.log("[LOG]", str);
+}
+
+function toString(data) {
+    var str = "";
+    for (var p in data) {
+        if (data[p] && data[p].toString) {
+            str += data[p].toString() + " ";
+        }
+    }
+    return str;
 }

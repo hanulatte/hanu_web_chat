@@ -10,18 +10,34 @@ $(document).ready(function() {
     //메시지 인풋에서 엔터치면
     $(document).on("keydown", "#message", function(e) {
         if (e.keyCode == 13) {
-            $("#submit").trigger("click");
+            $("#toRoom").trigger("click");
         }
     });
     //버튼을 클릭할 때
-    $(document).on("click", "#submit", function() {
+    $(document).on("click", "#toRoom", function() {
         // 클릭 후 메시지 박스로 이동
         $("#message").focus();
         // 앞 뒤 공백 제거
         var message = $("#message").val().trim();
         if (message != "") { // 공백 메시지 필터
             $("#message").val("");
-            socket.emit('message', {
+            socket.emit('toRoom', {
+                room: $("#room_name").val().trim(),
+                name: $('#name').val(),
+                message: message,
+                date: new Date().toLocaleString() // toUTCString()
+            });
+        }
+    });
+    $(document).on("click", "#toAll", function() {
+        // 클릭 후 메시지 박스로 이동
+        $("#message").focus();
+        // 앞 뒤 공백 제거
+        var message = $("#message").val().trim();
+        if (message != "") { // 공백 메시지 필터
+            $("#message").val("");
+            socket.emit('toAll', {
+                room: $("#room_name").val().trim(),
                 name: $('#name').val(),
                 message: message,
                 date: new Date().toLocaleString() // toUTCString()
@@ -29,3 +45,7 @@ $(document).ready(function() {
         }
     });
 });
+
+$(window).unload(function() {
+   socket.emit("unload", $("#room_name").val().trim());
+ });
