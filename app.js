@@ -67,6 +67,7 @@ var server = http.createServer(function(request, response) {
 
 var io = socketio.listen(server);
 var roomList = [];
+var roomMemberCount = [];
 io.sockets.on('connection', function(socket) {
     log("socket connection");
     log("room condition :", roomList.join(", "));
@@ -74,24 +75,34 @@ io.sockets.on('connection', function(socket) {
     io.sockets.emit("room_list", roomList);
     socket.on("join", function(room_name) {
         socket.join(room_name);
-        if (!roomList.includes(room_name)) {
-            roomList.push(room_name);
+        var i = roomList.indexOf(room_name);
+        if (i == -1) {
+            var j = roomList.push(room_name);
+            roomMemberCount[j - 1] = 1;
+        }else{
+          roomMemberCount[i]++;
         }
-        log("join" + room_name + "/ room condition :", roomList.join(", "));
+        log("join", room_name, "/ room condition :", roomList.join(", "));
     });
     socket.on('toRoom', function(data) {
         io.sockets.in(data.room).emit('message', data);
         log("toRoom :", toString(data));
     });
     socket.on("toAll", function(data){
-      io.sockets.emit("message", data);
+      io.sockets.emit("message", data, "to All : ");
       log("toAll :", toString(data));
     });
     socket.on("unload", function(room_name) {
         socket.leave(room_name);
         var i = roomList.indexOf(room_name);
-        (i != "-1") ? roomList.splice(i, 1): true;
-        log("leave", room_name, "/ room condition :", roomList.join(", "));
+        if(i != -1){
+          roomMemberCount[i]--;
+          if(roomMemberCount[i] <= 0){
+            roomList.splice(i, 1);
+            roomMemberCount.splice(i, 1);
+          }
+          log("leave", room_name, "/ room condition :", roomList.join(", "));
+        }
     });
 });
 
