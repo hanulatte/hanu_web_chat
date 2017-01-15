@@ -1,12 +1,15 @@
 $(document).ready(function() {
+
     socket = io.connect();
     socket.on("room_list", function(roomList) {
+      alert("room_list event...");
       $("#room_list_data").empty();
         for (var i in roomList) {
             var room_data = "<option value=\"" + roomList[i] + "\" />";
             $("#room_list_data").append(room_data);
         }
     });
+
     socket.on('message', function(data) {
       var toAll = arguments[1] || "";
         // 추가할 문자열을 만듭니다.
