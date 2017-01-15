@@ -59,7 +59,9 @@ var server = http.createServer(function(request, response) {
 }).on("clientError", function(err, data) {
     log("clientError", err);
     //log(console.dir(data));
-}).on("close", function(data) {
+  }).on("disconnection", function(data){
+    log("disconnection");
+  }).on("close", function(data) {
     log("close");
 }).listen(52273, function() {
     log("Server Start! Now Running... port: 52273");
