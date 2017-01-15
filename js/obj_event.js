@@ -7,7 +7,7 @@ $(document).ready(function() {
             location.href = "#chatpage";
         }
     });
-    
+
     //메시지 인풋에서 엔터치면
     $(document).on("keydown", "#message", function(e) {
         if (e.keyCode == 13) {
