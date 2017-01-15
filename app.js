@@ -63,9 +63,7 @@ var server = http.createServer(function(request, response) {
 }).on("clientError", function(err, data) {
     log("clientError", err);
     //log(console.dir(data));
-  }).on("disconnection", function(data){
-    log("disconnection");
-  }).on("close", function(data) {
+}).on("close", function(data) {
     log("close");
 }).listen(52273, function() {
     log("Server Start! Now Running... port: 52273");
@@ -86,8 +84,8 @@ io.sockets.on('connection', function(socket) {
         if (i == -1) {
             var j = roomList.push(room_name);
             roomMemberCount[j - 1] = 1;
-        }else{
-          roomMemberCount[i]++;
+        } else {
+            roomMemberCount[i]++;
         }
         log("join", room_name, "/ room condition :", roomList.join(", "));
     });
@@ -97,21 +95,21 @@ io.sockets.on('connection', function(socket) {
         log("toRoom :", toString(data));
     });
 
-    socket.on("toAll", function(data){
-      io.sockets.emit("message", data, "to All : ");
-      log("toAll :", toString(data));
+    socket.on("toAll", function(data) {
+        io.sockets.emit("message", data, "to All : ");
+        log("toAll :", toString(data));
     });
 
     socket.on("unload", function(room_name) {
         socket.leave(room_name);
         var i = roomList.indexOf(room_name);
-        if(i != -1){
-          roomMemberCount[i]--;
-          if(roomMemberCount[i] <= 0){
-            roomList.splice(i, 1);
-            roomMemberCount.splice(i, 1);
-          }
-          log("leave", room_name, "/ room condition :", roomList.join(", "));
+        if (i != -1) {
+            roomMemberCount[i]--;
+            if (roomMemberCount[i] <= 0) {
+                roomList.splice(i, 1);
+                roomMemberCount.splice(i, 1);
+            }
+            log("leave", room_name, "/ room condition :", roomList.join(", "));
         }
     });
 
