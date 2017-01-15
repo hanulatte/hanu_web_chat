@@ -8,11 +8,13 @@
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+
     <script src="js/socket_event.js"></script>
     <script src="js/cmn_event.js"></script>
     <script src="js/obj_event.js"></script>
     <script>
         var g; // global test var
+        //슬랙 깃허브 후킹 테스트 용 
     </script>
 </head>
 
@@ -28,7 +30,7 @@
             <input id="room_name" class="select" list="room_list_data" />
             <datalist id="room_list_data">
               <option value="Now Loading..." />
-  </datalist>
+            </datalist>
             <button id="join" data-role="button">Start Chat</button>
         </div>
     </div>
@@ -41,7 +43,6 @@
             <input id="toRoom" type="button" value="to Room Member">
             <input id="toAll" type="button" value="to All">
             <ul id="content" data-role="listview" data-inset="true">
-
             </ul>
         </div>
     </div>

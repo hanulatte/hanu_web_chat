@@ -9,6 +9,7 @@ var server = http.createServer(function(request, response) {
     var index = "HTMLPage_m.html";
     var file = (path == "") ? index : path;
     var type = file.substr(file.lastIndexOf(".") + 1);
+
     switch (type) {
         case "html":
         case "htm":
@@ -35,6 +36,7 @@ var server = http.createServer(function(request, response) {
         default:
             type = "text/plain";
     }
+
     if (request.method == "GET") {
         // get request
         var query = url.parse(request.url, true).query;
@@ -45,6 +47,7 @@ var server = http.createServer(function(request, response) {
             //data
         });
     }
+
     //파일을 읽는다
     fs.readFile(file, function(error, data) {
         response.writeHead(200, {
@@ -52,6 +55,7 @@ var server = http.createServer(function(request, response) {
         });
         response.end(data);
     });
+
 }).on("connection", function(data) {
     log("connection");
 }).on("request", function(data) {
@@ -75,6 +79,7 @@ io.sockets.on('connection', function(socket) {
     log("room condition :", roomList.join(", "));
     //이벤트
     io.sockets.emit("room_list", roomList);
+
     socket.on("join", function(room_name) {
         socket.join(room_name);
         var i = roomList.indexOf(room_name);
@@ -86,14 +91,17 @@ io.sockets.on('connection', function(socket) {
         }
         log("join", room_name, "/ room condition :", roomList.join(", "));
     });
+
     socket.on('toRoom', function(data) {
         io.sockets.in(data.room).emit('message', data);
         log("toRoom :", toString(data));
     });
+
     socket.on("toAll", function(data){
       io.sockets.emit("message", data, "to All : ");
       log("toAll :", toString(data));
     });
+
     socket.on("unload", function(room_name) {
         socket.leave(room_name);
         var i = roomList.indexOf(room_name);
@@ -106,6 +114,7 @@ io.sockets.on('connection', function(socket) {
           log("leave", room_name, "/ room condition :", roomList.join(", "));
         }
     });
+
 });
 
 function log() {
