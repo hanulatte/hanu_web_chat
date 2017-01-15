@@ -38,7 +38,7 @@ var server = http.createServer(function(request, response) {
             type = "text/plain";
     }
 
-    /* 기능하지 않는 GET, POST */
+/* 기능하지 않는 GET, POST */
     if (request.method == "GET") {
         // get request
         var query = url.parse(request.url, true).query;
@@ -65,7 +65,9 @@ var server = http.createServer(function(request, response) {
 }).on("clientError", function(err, data) {
     log("clientError", err);
     //log(console.dir(data));
-}).on("close", function(data) {
+  }).on("disconnection", function(data){
+    log("disconnection");
+  }).on("close", function(data) {
     log("close");
 }).listen(52273, function() {
     log("Server Start! Now Running... port: 52273");
