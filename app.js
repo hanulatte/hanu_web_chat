@@ -3,11 +3,12 @@ var http = require('http');
 var fs = require('fs');
 var socketio = require('socket.io');
 var url = require("url");
+
 //웹서버를 만듭니다.
 var server = http.createServer(function(request, response) {
     var path = url.parse(request.url).pathname.substr(1);
     var index = "HTMLPage_m.html";
-    var file = (path == "") ? index : path;
+    var file = (path === "") ? index : path;
     var type = file.substr(file.lastIndexOf(".") + 1);
 
     switch (type) {
@@ -28,7 +29,7 @@ var server = http.createServer(function(request, response) {
             type = "image/png";
             break;
         case "mp4":
-            type = "video/mpeg"
+            type = "video/mpeg";
             break;
         case "mp3":
             type = "audio/mp3";
@@ -37,6 +38,7 @@ var server = http.createServer(function(request, response) {
             type = "text/plain";
     }
 
+/* 기능하지 않는 GET, POST */
     if (request.method == "GET") {
         // get request
         var query = url.parse(request.url, true).query;
@@ -72,6 +74,7 @@ var server = http.createServer(function(request, response) {
 var io = socketio.listen(server);
 var roomList = [];
 var roomMemberCount = [];
+
 io.sockets.on('connection', function(socket) {
     log("socket connection");
     log("room condition :", roomList.join(", "));
