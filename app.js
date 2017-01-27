@@ -3,6 +3,7 @@ var http = require('http');
 var fs = require('fs');
 var socketio = require('socket.io');
 var url = require("url");
+var server_util = require("./js/server_util.js");   // 노드 서버용 유틸 
 
 //html 페이지 클라이언트로 전송
 var redirectHtmlPage = function(response, file, type){
@@ -73,18 +74,17 @@ var server = http.createServer(function(request, response) {
     redirectHtmlPage(response, file, type);
 
 }).on("connection", function(data) {
-    log("connection");
+    server_util.log("connection");
 }).on("request", function(data) {
-    log("request");
+    server_util.log("request");
 }).on("clientError", function(err, data) {
-    log("clientError", err);
-    //log(console.dir(data));
+    server_util.log("clientError", err);
   }).on("disconnection", function(data){
-    log("disconnection");
+    server_util.log("disconnection");
   }).on("close", function(data) {
-    log("close");
+    server_util.log("close");
 }).listen(52273, function() {
-    log("Server Start! Now Running... port: 52273");
+    server_util.log("Server Start! Now Running... port: 52273");
 });
 
 var io = socketio.listen(server);
@@ -92,8 +92,8 @@ var roomList = [];
 var roomMemberCount = [];
 
 io.sockets.on('connection', function(socket) {
-    log("socket connection");
-    log("room condition :", roomList.join(", "));
+    server_util.log("socket connection");
+    server_util.log("room condition :", roomList.join(", "));
     //이벤트
     io.sockets.emit("room_list", roomList);
 
@@ -106,17 +106,17 @@ io.sockets.on('connection', function(socket) {
         }else{
           roomMemberCount[i]++;
         }
-        log("join", room_name, "/ room condition :", roomList.join(", "));
+        server_util.log("join", room_name, "/ room condition :", roomList.join(", "));
     });
 
     socket.on('toRoom', function(data) {
         io.sockets.in(data.room).emit('message', data);
-        log("toRoom :", toString(data));
+        server_util.log("toRoom :", server_util.toString(data));
     });
 
     socket.on("toAll", function(data){
       io.sockets.emit("message", data, "to All : ");
-      log("toAll :", toString(data));
+      server_util.log("toAll :", server_util.toString(data));
     });
 
     socket.on("unload", function(room_name) {
@@ -128,24 +128,8 @@ io.sockets.on('connection', function(socket) {
             roomList.splice(i, 1);
             roomMemberCount.splice(i, 1);
           }
-          log("leave", room_name, "/ room condition :", roomList.join(", "));
+          server_util.log("leave", room_name, "/ room condition :", roomList.join(", "));
         }
     });
 
 });
-
-//아래 유틸 함수는 js 를 뽑아서 관리 해야 함. 어뜩케 하더라?
-function log() {
-    var str = toString(arguments);
-    console.log("[LOG]", str);
-}
-
-function toString(data) {
-    var str = "";
-    for (var p in data) {
-        if (data[p] && data[p].toString) {
-            str += data[p].toString() + " ";
-        }
-    }
-    return str;
-}
