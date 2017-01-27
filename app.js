@@ -4,10 +4,41 @@ var fs = require('fs');
 var socketio = require('socket.io');
 var url = require("url");
 
+//html 페이지 클라이언트로 전송
+var redirectHtmlPage = function(response, file, type){
+  //파일을 읽는다
+  var readFileError = fs.readFile(file, function(error, data) {
+
+      if(file == "favicon.ico") return;  // 파비콘 무시
+
+      if(error !== null){
+        return error;
+      }else{
+        response.writeHead(200, {
+            'Content-type': type
+        });
+      }//else
+
+      response.end(data);
+  });
+
+  //readFile시 에러 발생하면 그냥 404라고 여기고 에러 페이지 리다이렉트
+  if(readFileError !== null){
+    fs.readFile("error_404.html", function(error, data) {
+      response.writeHead(200, {
+        'Content-type': "text/html"
+      });
+
+      response.end(data);
+    });
+  }//if
+
+};//redirectHtmlPage
+
 //웹서버를 만듭니다.
 var server = http.createServer(function(request, response) {
     var path = url.parse(request.url).pathname.substr(1);
-    var index = "HTMLPage_m.html";
+    var index = "index.html";
     var file = (path === "") ? index : path;
     var type = file.substr(file.lastIndexOf(".") + 1);
 
@@ -38,25 +69,8 @@ var server = http.createServer(function(request, response) {
             type = "text/plain";
     }
 
-/* 기능하지 않는 GET, POST */
-    if (request.method == "GET") {
-        // get request
-        var query = url.parse(request.url, true).query;
-        //JSON.stringify(query);
-    } else if (request.method == "POST") {
-        // post request
-        request.on("data", function(data) {
-            //data
-        });
-    }
-
     //파일을 읽는다
-    fs.readFile(file, function(error, data) {
-        response.writeHead(200, {
-            'Content-type': type
-        });
-        response.end(data);
-    });
+    redirectHtmlPage(response, file, type);
 
 }).on("connection", function(data) {
     log("connection");
@@ -120,6 +134,7 @@ io.sockets.on('connection', function(socket) {
 
 });
 
+//아래 유틸 함수는 js 를 뽑아서 관리 해야 함. 어뜩케 하더라?
 function log() {
     var str = toString(arguments);
     console.log("[LOG]", str);

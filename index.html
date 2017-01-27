@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mobile Chat</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+
+    //socket io 관련 초기화 함수
+    function initSocket(){
+      socket = io.connect();
+      socket.on("room_list", function(roomList) {
+        $("#room_list_data").empty();
+          for (var i in roomList) {
+              var room_data = "<option value=\"" + roomList[i] + "\" />";
+              $("#room_list_data").append(room_data);
+          }
+      });
+
+      socket.on('message', function(data) {
+        var toAll = arguments[1] || "";
+          // 추가할 문자열을 만듭니다.
+          var output = '';
+              output += '<li>';
+              output += '       <p><span style="font-weight:bold;font-size:14pt;">' + data.name + '</span> (' + data.date + ')</p>';
+              output += '       <p><span style="font-weight:bold;">' + toAll + "</span>" + data.message + '</p>';
+              output += '</li>';
+          //문서 객체를 추가합니다.
+          $(output).prependTo('#content');
+          $('#content').listview('refresh');
+      });
+    }//initSocket
+
+    //화면 컴포넌트 이벤트 관련 함수
+    function initComponentEvent(){
+
+      $("#join").on("click", function(){
+        var room_name = $("#room_name").val().trim();
+        if (room_name !== "" && room_name != "Now Loading...") {
+            socket.emit("join", room_name);
+            location.href = "#chatpage";
+        }else{
+          alert("방이름을 입력하세요.");
+        }
+      });
+
+      //메시지 인풋에서 엔터치면
+      $("#message").on("click", function(e){
+        if (e.keyCode == 13) {
+            $("#toRoom").trigger("click");
+        }
+      });
+
+      $("#toRoom").on("click", function(e){
+        // 클릭 후 메시지 박스로 이동
+        $("#message").focus();
+        // 앞 뒤 공백 제거
+        var message = $("#message").val().trim();
+        if (message !== "") { // 공백 메시지 필터
+            $("#message").val("");
+            socket.emit('toRoom', {
+                room: $("#room_name").val().trim(),
+                name: $('#name').val(),
+                message: message,
+                date: new Date().toLocaleString() // toUTCString()
+            });
+        }else{
+          alert("메세지를 입력하세요.");
+        }
+      });
+
+      $("#toAll").on("click", function(){
+        // 클릭 후 메시지 박스로 이동
+        $("#message").focus();
+        // 앞 뒤 공백 제거
+        var message = $("#message").val().trim();
+        if (message !== "") { // 공백 메시지 필터
+            $("#message").val("");
+            socket.emit('toAll', {
+                room: $("#room_name").val().trim(),
+                name: $('#name').val(),
+                message: message,
+                date: new Date().toLocaleString() // toUTCString()
+            });
+        }
+      });
+
+      //
+      $(window).unload(function() {
+         socket.emit("unload", $("#room_name").val().trim());
+       });
+
+    }//initComponentEvent
+
+
+    $(document).ready(function() {
+
+      initSocket();
+      initComponentEvent();
+
+    });
+
+    </script>
+</head>
+
+<body>
+    <div data-role="page">
+        <div data-role="header">
+            <h1>HanuLatte Socket.do Chat</h1>
+        </div>
+        <div data-role="content">
+            <h3>Nick name</h3>
+            <input id="name" class="select" />
+            <h3>Room name</h3>
+            <input id="room_name" class="select" list="room_list_data" />
+            <datalist id="room_list_data">
+              <option value="Now Loading..." />
+            </datalist>
+            <button id="join" data-role="button">Start Chat</button>
+        </div>
+    </div>
+    <div data-role="page" id="chatpage">
+        <div data-role="header">
+            <h1>HanuLatte Socket.io Chat</h1>
+        </div>
+        <div data-role="content">
+            <input id="message" />
+            <input id="toRoom" type="button" value="to Room Member">
+            <input id="toAll" type="button" value="to All">
+            <ul id="content" data-role="listview" data-inset="true">
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
